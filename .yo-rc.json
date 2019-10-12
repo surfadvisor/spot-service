@@ -1,0 +1,37 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.surf.advisor.spot"
+    },
+    "jhipsterVersion": "6.4.1",
+    "applicationType": "microservice",
+    "baseName": "spots",
+    "packageName": "com.surf.advisor.spot",
+    "packageFolder": "com/surf/advisor/spot",
+    "serverPort": "8001",
+    "authenticationType": "jwt",
+    "cacheProvider": "caffeine",
+    "enableHibernateCache": false,
+    "websocket": false,
+    "databaseType": "no",
+    "devDatabaseType": "no",
+    "prodDatabaseType": "no",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": true,
+    "jwtSecretKey": "YmE2YTEwY2I0MGZiMGNiMjAzNDY0NWNjOTJhYjk5ODNlOTRlOGQyMWJhYjhhOWRjY2I0NGNlM2U3MDZhNGUwZThlYWE5YWIwYTY2OTdjMTUxNDk1MDk3MzkwMWEzOTI2Y2NlNjQ5NTdmMzU3YTcyN2QyOGQ5NDMxN2RlYmNhNmY=",
+    "embeddableLaunchScript": false,
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": false,
+    "clientPackageManager": "npm",
+    "blueprints": [],
+    "skipClient": true,
+    "skipUserManagement": true
+  }
+}
