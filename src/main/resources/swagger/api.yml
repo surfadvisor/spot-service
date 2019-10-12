@@ -1,22 +1,74 @@
 # API-first development with OpenAPI
 # This file will be used at compile time to generate Spring-MVC endpoint stubs using openapi-generator
-openapi: '3.0.1'
+swagger: "2.0"
 info:
   title: 'spots'
   version: 0.0.1
-servers:
-  - url: http://localhost:8001
-    description: Development server
-  - url: https://localhost:8001
-    description: Development server with TLS Profile
-paths: {}
 
-components:
-  securitySchemes:
-    jwt:
-      type: http
-      description: JWT Authentication
-      scheme: bearer
-      bearerFormat: JWT
-security:
-  - jwt: []
+paths:
+  /spots:
+    get:
+      tags:
+        - "spot"
+      summary: "Find spots using selectors"
+      operationId: "findSpots"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+
+        - name: "ids"
+          in: "query"
+          description: "spot identifiers that need to be considered for filter"
+          required: true
+          type: "array"
+          items:
+            type: "integer"
+            format: "int64"
+          collectionFormat: "multi"
+
+        - name: "status"
+          in: "query"
+          description: "Status values that need to be considered for filter"
+          required: true
+          type: "array"
+          items:
+            type: "string"
+            enum:
+              - "draft"
+              - "declined"
+              - "available"
+            default: "available"
+          collectionFormat: "multi"
+
+      responses:
+        200:
+          description: "ok"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Spot"
+definitions:
+  Spot:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        example: "Hel"
+      photoUrls:
+        type: "array"
+        xml:
+          name: "photoUrl"
+          wrapped: true
+        items:
+          type: "string"
+      status:
+        type: "string"
+        description: "spot status, promoted by moderator"
+        enum:
+          - "draft"
+          - "declined"
+          - "available"
