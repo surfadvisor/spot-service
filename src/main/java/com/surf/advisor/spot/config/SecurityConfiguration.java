@@ -1,22 +1,17 @@
 package com.surf.advisor.spot.config;
 
-import com.surf.advisor.spot.security.*;
-import com.surf.advisor.spot.security.jwt.*;
-
-import org.springframework.context.annotation.Bean;
+import com.surf.advisor.spot.security.AuthoritiesConstants;
+import com.surf.advisor.spot.security.jwt.JWTConfigurer;
+import com.surf.advisor.spot.security.jwt.TokenProvider;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+//@EnableWebSecurity
+//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Import(SecurityProblemSupport.class)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
