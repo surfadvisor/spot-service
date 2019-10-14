@@ -8,6 +8,15 @@
 # More information on configuration properties: https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
+# AWS
+amazon:
+  access:
+    key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
+  region: ${AWS_DEFAULT_REGION}
+  end-point:
+    url: dynamodb.${AWS_DEFAULT_REGION}.amazonaws.com
+
 # ===================================================================
 # Standard Spring Boot properties.
 # Full reference is available at:

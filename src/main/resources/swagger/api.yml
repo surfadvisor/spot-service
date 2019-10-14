@@ -47,6 +47,33 @@ paths:
             items:
               $ref: "#/definitions/PagedSpotResponse"
 
+    put:
+      tags:
+        - "spot"
+      summary: "put spot"
+      operationId: "putSpot"
+      produces:
+        - "application/xml"
+        - "application/json"
+      consumes:
+        - "application/xml"
+        - "application/json"
+
+      parameters:
+        - in: body
+          name: spot
+          required: true
+          description: "spot model"
+          schema:
+            $ref: '#/definitions/Spot'
+
+      responses:
+        200:
+          description: "object identifier"
+          schema:
+            type: integer
+            format: int64
+
   /spots/filter-ids:
     get:
       tags:
