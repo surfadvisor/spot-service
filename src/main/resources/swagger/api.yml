@@ -43,9 +43,7 @@ paths:
         200:
           description: "ok"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/PagedSpotResponse"
+            $ref: "#/definitions/PagedSpotResponse"
 
     put:
       tags:
@@ -69,10 +67,35 @@ paths:
 
       responses:
         200:
-          description: "object identifier"
+          description: "ok"
           schema:
-            type: integer
-            format: int64
+            $ref: "#/definitions/SpotIdResponse"
+
+    post:
+      tags:
+      - "spot"
+      summary: "post new spot"
+      operationId: "postSpot"
+      produces:
+        - "application/xml"
+        - "application/json"
+      consumes:
+        - "application/xml"
+        - "application/json"
+
+      parameters:
+        - in: body
+          name: spot
+          required: true
+          description: "spot model"
+          schema:
+            $ref: '#/definitions/Spot'
+
+      responses:
+        200:
+          description: "ok"
+          schema:
+            $ref: "#/definitions/SpotIdResponse"
 
   /spots/filter-ids:
     get:
@@ -97,20 +120,31 @@ paths:
         200:
           description: "ok"
           schema:
-            type: "array"
-            items:
-              type: "integer"
-              format: "int64"
+            $ref: "#/definitions/SpotIdListResponse"
+
 definitions:
   Spot:
     type: "object"
     properties:
       id:
-        type: "integer"
-        format: "int64"
-      name:
+        type: string
+        required: true
+      country:
+        type: "string"
+        example: "PL"
+        required: true
+      state:
+        type: "string"
+        example: "pomorskie"
+        required: true
+      city:
         type: "string"
         example: "Hel"
+        required: true
+      name:
+        type: "string"
+        example: "Hel Molo"
+        required: true
       photoUrls:
         type: "array"
         xml:
@@ -125,6 +159,31 @@ definitions:
           - "DRAFT"
           - "DECLINED"
           - "AVAILABLE"
+
+  SpotFilters:
+    type: object
+    properties:
+      ids:
+        description: "spot identifiers"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      status:
+        description: "status values"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+            - "DRAFT"
+            - "DECLINED"
+            - "AVAILABLE"
+          default: "available"
+        collectionFormat: "multi"
+
+# RESPONSES
 
   PagedSpotResponse:
     type: "object"
@@ -146,26 +205,19 @@ definitions:
         type: "integer"
         description: "total items count"
 
-  SpotFilters:
-    type: object
+  SpotIdResponse:
+    type: "object"
+    description: "modified spot identifier"
+    properties:
+      id:
+        type: string
+
+  SpotIdListResponse:
+    type: "object"
+    description: "spot identifiers"
     properties:
       ids:
-        description: "spot identifiers"
-        required: true
         type: "array"
         items:
-          type: "integer"
-          format: "int64"
-        collectionFormat: "multi"
-      status:
-        description: "status values"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-            - "DRAFT"
-            - "DECLINED"
-            - "AVAILABLE"
-          default: "available"
-        collectionFormat: "multi"
+          type: string
+
