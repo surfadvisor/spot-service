@@ -1,7 +1,7 @@
-package com.surf.advisor.spot.domain;
+package com.surf.advisor.spot.model;
 
+import static com.surf.advisor.spot.util.RangeKeyUtils.buildRangeKey;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -9,23 +9,20 @@ import com.surf.advisor.spot.web.api.model.Spot;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import lombok.Getter;
 
 public class SpotRecord {
 
-    private static final String SEPARATOR = "#";
-
     private static final String ID = "id";
     private static final String RANGE_KEY = "rangeKey";
 
-    private static final String COUNTRY = "country";
-    private static final String STATE = "state";
-    private static final String CITY = "city";
+    static final String COUNTRY = "country";
+    static final String STATE = "state";
+    static final String CITY = "city";
 
-    private static final String NAME = "name";
+    static final String NAME = "name";
     private static final String PHOTO_URLS = "photoUrls";
-    private static final String STATUS = "status";
+    static final String STATUS = "spot_status";
 
     @Getter
     private Map<String, AttributeValue> values = new HashMap<>();
@@ -67,21 +64,6 @@ public class SpotRecord {
             .ifPresent(spot::setPhotoUrls);
 
         return spot;
-    }
-
-    private AttributeValue buildRangeKey(Spot spot) {
-        String rangeKey = Stream.of(
-            spot.getStatus().name(),
-            spot.getCountry(),
-            spot.getState(),
-            spot.getCity(),
-            spot.getName()
-        )
-            .map(val -> ofNullable(val).orElse(""))
-            .map(String::toLowerCase)
-            .collect(joining(SEPARATOR));
-
-        return new AttributeValue(rangeKey);
     }
 
 }

@@ -128,23 +128,18 @@ definitions:
     properties:
       id:
         type: string
-        required: true
       country:
         type: "string"
         example: "PL"
-        required: true
       state:
         type: "string"
         example: "pomorskie"
-        required: true
       city:
         type: "string"
         example: "Hel"
-        required: true
       name:
         type: "string"
         example: "Hel Molo"
-        required: true
       photoUrls:
         type: "array"
         xml:
@@ -159,20 +154,23 @@ definitions:
           - "DRAFT"
           - "DECLINED"
           - "AVAILABLE"
+    required:
+      - country
+      - state
+      - city
+      - name
 
   SpotFilters:
     type: object
     properties:
       ids:
         description: "spot identifiers"
-        required: true
         type: "array"
         items:
           type: "string"
         collectionFormat: "multi"
       status:
         description: "status values"
-        required: true
         type: "array"
         items:
           type: "string"
@@ -182,6 +180,18 @@ definitions:
             - "AVAILABLE"
           default: "available"
         collectionFormat: "multi"
+      country:
+        type: "string"
+        example: "PL"
+      state:
+        type: "string"
+        example: "pomorskie"
+      city:
+        type: "string"
+        example: "Hel"
+      name:
+        type: "string"
+        example: "Hel Molo"
 
 # RESPONSES
 
@@ -201,9 +211,6 @@ definitions:
       size:
         type: "integer"
         description: "items count"
-      total:
-        type: "integer"
-        description: "total items count"
 
   SpotIdResponse:
     type: "object"
