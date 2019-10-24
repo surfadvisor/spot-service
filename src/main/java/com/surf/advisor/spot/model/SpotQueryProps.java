@@ -6,7 +6,6 @@ import static com.surf.advisor.spot.util.RangeKeyUtils.rangeKeyColumns;
 import static com.surf.advisor.spot.util.RecordUtils.exclusiveStartKey;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -19,23 +18,25 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
+@Getter
 @ToString
 public class SpotQueryProps {
 
-    @Getter
-    private List<String> keyConditionExp = new LinkedList<>();
-    @Getter
+    private final SpotFilters filters;
+
+    private List<KeyCondition> keyConditions = new LinkedList<>();
     private String filterExp;
 
     private Map<String, AttributeValue> valueMap = new HashMap<>();
-    @Getter
     private Map<String, AttributeValue> exclusiveStartKey;
-    @Getter
+
     private Integer limit;
 
-    private final SpotFilters filters;
+    @Setter
+    private String projectionExp;
 
 
     public SpotQueryProps(SpotFilters spotFilters, int limit, String lastEvaluatedKey) {
@@ -57,9 +58,8 @@ public class SpotQueryProps {
             }
         } while (isNotBlank(searchValue) && !rangeKeyColumns.isEmpty());
 
-        setKeyConditionExpresion(rangeKeyPhrase.toString());
         setFilterExpression(idsSpecified() ? rangeKeyColumns : rangeKeyColumns());
-
+        setKeyConditionExpresion(rangeKeyPhrase.toString());
     }
 
     public Map<String, AttributeValue> getValueMap() {
@@ -73,23 +73,16 @@ public class SpotQueryProps {
     private void setKeyConditionExpresion(String rangeKeyPhrase) {
 
         if (idsSpecified()) {
-            var keys = new HashSet<>(filters.getIds()).stream()
-                .collect(toMap(id -> ":v_" + id, AttributeValue::new));
-
-            keys.forEach((key, val) -> {
-                String keyExp = format("id = %s", key);
-
-                if (isNotBlank(rangeKeyPhrase)) {
-                    keyExp += " and rangeKey BEGINS_WITH :v_rangeKey";
-                }
-
-                keyConditionExp.add(keyExp);
-                valueMap.put(key, val);
-            });
-
             if (isNotBlank(rangeKeyPhrase)) {
                 valueMap.put(":v_rangeKey", new AttributeValue(rangeKeyPhrase));
             }
+
+            String keyExpSuffix = isNotBlank(rangeKeyPhrase) ?
+                " and begins_with(rangeKey, :v_rangeKey)" : "";
+
+            new HashSet<>(filters.getIds()).stream()
+                .map(id -> new KeyCondition(id, keyExpSuffix, valueMap))
+                .forEach(keyConditions::add);
         }
     }
 
