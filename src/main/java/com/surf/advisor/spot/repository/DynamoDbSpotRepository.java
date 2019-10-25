@@ -1,5 +1,6 @@
 package com.surf.advisor.spot.repository;
 
+import static com.surf.advisor.spot.model.SpotRecord.ID;
 import static com.surf.advisor.spot.util.RecordUtils.lastEvaluatedKey;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -11,6 +12,8 @@ import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.surf.advisor.spot.model.SpotQueryProps;
 import com.surf.advisor.spot.model.SpotRecord;
 import com.surf.advisor.spot.web.api.model.PagedSpotResponse;
+import com.surf.advisor.spot.web.api.model.Spot;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -35,7 +38,7 @@ public class DynamoDbSpotRepository implements ISpotRepository {
 
         log.debug("Find spots by params: {}", props);
 
-        var page = isEmpty(props.getKeyConditionExp()) ? scanSpots(props) : querySpots(props);
+        var page = isEmpty(props.getKeyConditions()) ? scanSpots(props) : querySpots(props);
 
         page.setSize(page.getSpots().size());
         page.setLimit(props.getLimit());
@@ -43,14 +46,24 @@ public class DynamoDbSpotRepository implements ISpotRepository {
         return page;
     }
 
+    @Override
+    public List<String> findSpotIds(SpotQueryProps props) {
+
+        props.setProjectionExp(ID);
+
+        return findSpots(props).getSpots().stream()
+            .map(Spot::getId).collect(toList());
+    }
+
     private PagedSpotResponse querySpots(SpotQueryProps props) {
 
-        var spots = props.getKeyConditionExp().parallelStream().flatMap(keyCondition -> {
+        var spots = props.getKeyConditions().parallelStream().flatMap(keyCondition -> {
 
             var request = new QueryRequest(tableName)
-                .withKeyConditionExpression(keyCondition)
+                .withKeyConditionExpression(keyCondition.getExpression())
                 .withFilterExpression(props.getFilterExp())
-                .withExpressionAttributeValues(props.getValueMap())
+                .withExpressionAttributeValues(keyCondition.getValueMap())
+                .withProjectionExpression(props.getProjectionExp())
                 .withLimit(props.getLimit());
 
             log.debug("Retrieving spots by DynamoDB Query: {}", request);
@@ -67,13 +80,14 @@ public class DynamoDbSpotRepository implements ISpotRepository {
         return page;
     }
 
-    private PagedSpotResponse scanSpots(SpotQueryProps queryProps) {
+    private PagedSpotResponse scanSpots(SpotQueryProps props) {
 
         var request = new ScanRequest(tableName)
-            .withFilterExpression(queryProps.getFilterExp())
-            .withExpressionAttributeValues(queryProps.getValueMap())
-            .withExclusiveStartKey(queryProps.getExclusiveStartKey())
-            .withLimit(queryProps.getLimit());
+            .withFilterExpression(props.getFilterExp())
+            .withExpressionAttributeValues(props.getValueMap())
+            .withProjectionExpression(props.getProjectionExp())
+            .withExclusiveStartKey(props.getExclusiveStartKey())
+            .withLimit(props.getLimit());
 
         log.debug("Retrieving spots by DynamoDB Scan: {}", request);
 
