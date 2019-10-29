@@ -150,7 +150,7 @@ jhipster:
   mail:
     from: spots@localhost
   swagger:
-    default-include-pattern: /api/.*
+    default-include-pattern: /spots.*
     title: spots API
     description: spots API documentation
     version: 0.0.1
