@@ -8,6 +8,7 @@ import static java.util.stream.Collectors.toList;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.surf.advisor.spot.web.api.model.Spot;
+import com.surf.advisor.spot.web.api.model.SpotStatus;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class SpotRecord {
 
         spot.setId(getStr(ID));
         spot.setName(getStr(NAME));
-        spot.setStatus(getStr(STATUS, Spot.StatusEnum::fromValue));
+        spot.setStatus(getStr(STATUS, SpotStatus::fromValue));
         spot.setCountry(getStr(COUNTRY));
         spot.setState(getStr(STATE));
         spot.setCity(getStr(CITY));

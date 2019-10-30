@@ -97,6 +97,29 @@ paths:
           schema:
             $ref: "#/definitions/SpotIdResponse"
 
+  /spots/{id}:
+    get:
+      tags:
+        - "spot"
+      summary: "Find spot by identifier"
+      operationId: "getSpot"
+      produces:
+        - "application/xml"
+        - "application/json"
+      consumes:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        200:
+          description: "ok"
+          schema:
+            $ref: "#/definitions/Spot"
+
   /spots/filter-ids:
     get:
       tags:
@@ -148,12 +171,7 @@ definitions:
         items:
           type: "string"
       status:
-        type: "string"
-        description: "spot status, promoted by moderator"
-        enum:
-          - "DRAFT"
-          - "DECLINED"
-          - "AVAILABLE"
+        $ref: "#/definitions/SpotStatus"
     required:
       - country
       - state
@@ -173,12 +191,7 @@ definitions:
         description: "status values"
         type: "array"
         items:
-          type: "string"
-          enum:
-            - "DRAFT"
-            - "DECLINED"
-            - "AVAILABLE"
-          default: "available"
+          $ref: "#/definitions/SpotStatus"
         collectionFormat: "multi"
       country:
         type: "string"
@@ -192,6 +205,14 @@ definitions:
       name:
         type: "string"
         example: "Hel Molo"
+
+  SpotStatus:
+    type: "string"
+    enum:
+      - "DRAFT"
+      - "DECLINED"
+      - "AVAILABLE"
+    default: "AVAILABLE"
 
 # RESPONSES
 

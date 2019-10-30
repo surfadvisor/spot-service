@@ -1,8 +1,9 @@
 package com.surf.advisor.spot.service;
 
-import static com.surf.advisor.spot.web.api.model.Spot.StatusEnum.DRAFT;
+import static com.surf.advisor.spot.web.api.model.SpotStatus.DRAFT;
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import com.surf.advisor.spot.model.SpotQueryProps;
 import com.surf.advisor.spot.model.SpotRecord;
@@ -16,6 +17,7 @@ import com.surf.advisor.spot.web.api.model.SpotIdResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,14 @@ public class SpotApiDelegateImpl implements SpotsApiDelegate {
         spotRepository.put(new SpotRecord(spot));
 
         return ResponseEntity.ok(new SpotIdResponse().id(spot.getId()));
+    }
+
+    @Override
+    public ResponseEntity<Spot> getSpot(String id) {
+        return spotRepository.get(id)
+            .map(SpotRecord::toResponse)
+            .map(ResponseEntity::ok)
+            .orElseThrow(() -> new HttpClientErrorException(NOT_FOUND));
     }
 
     @Override

@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
@@ -14,6 +15,8 @@ import com.surf.advisor.spot.model.SpotRecord;
 import com.surf.advisor.spot.web.api.model.PagedSpotResponse;
 import com.surf.advisor.spot.web.api.model.Spot;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -25,6 +28,15 @@ public class DynamoDbSpotRepository implements ISpotRepository {
 
     private final AmazonDynamoDB ddb;
     private final String tableName;
+
+    @Override
+    public Optional<SpotRecord> get(String id) {
+        var request = new QueryRequest(tableName)
+            .withKeyConditionExpression("id = :v_id")
+            .withExpressionAttributeValues(Map.of(":v_id", new AttributeValue(id)));
+
+        return ddb.query(request).getItems().stream().findAny().map(SpotRecord::new);
+    }
 
     @Override
     public void put(SpotRecord spotRecord) {
