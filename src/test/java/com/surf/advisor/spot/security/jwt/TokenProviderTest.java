@@ -1,11 +1,19 @@
 package com.surf.advisor.spot.security.jwt;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.surf.advisor.spot.security.AuthoritiesConstants;
-
+import io.github.jhipster.config.JHipsterProperties;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import java.security.Key;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,14 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import io.github.jhipster.config.JHipsterProperties;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+@Disabled
 public class TokenProviderTest {
 
     private static final long ONE_MINUTE = 60000;
