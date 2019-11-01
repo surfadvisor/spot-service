@@ -4,7 +4,7 @@
 
     <groupId>com.surf.advisor.spot</groupId>
     <artifactId>spots</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Spots</name>
 
@@ -12,7 +12,7 @@
         <url>https://github.com/surfadvisor/spot-service</url>
         <connection>scm:git:https://github.com/surfadvisor/spot-service</connection>
         <developerConnection>scm:git:https://github.com/surfadvisor/spot-service</developerConnection>
-        <tag>spots-0.0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
