@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.surf.advisor.spot</groupId>
     <artifactId>spots</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
     <name>Spots</name>
 
@@ -13,7 +12,7 @@
         <url>https://github.com/surfadvisor/spot-service</url>
         <connection>scm:git:https://github.com/surfadvisor/spot-service</connection>
         <developerConnection>scm:git:https://github.com/surfadvisor/spot-service</developerConnection>
-        <tag>HEAD</tag>
+        <tag>spots-0.0.1</tag>
     </scm>
 
     <repositories>
@@ -950,7 +949,7 @@
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore/>
+                                                <ignore />
                                             </action>
                                         </pluginExecution>
                                         <pluginExecution>
