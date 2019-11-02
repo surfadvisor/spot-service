@@ -118,6 +118,8 @@ spring:
   output:
     ansi:
       console-available: true
+  jackson:
+    default-property-inclusion: non_null
 
 server:
   servlet:
