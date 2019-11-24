@@ -7,6 +7,7 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.surf.advisor.spot.web.api.model.CountryCode;
 import com.surf.advisor.spot.web.api.model.Spot;
 import com.surf.advisor.spot.web.api.model.SpotStatus;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class SpotRecord {
         setStr(ID, spot.getId());
         setStr(NAME, spot.getName());
         setStr(STATUS, spot.getStatus().name());
-        setStr(COUNTRY, spot.getCountry());
+        setStr(COUNTRY, spot.getCountry().name());
         setStr(STATE, spot.getState());
         setStr(CITY, spot.getCity());
 
@@ -59,7 +60,7 @@ public class SpotRecord {
         spot.setId(getStr(ID));
         spot.setName(getStr(NAME));
         spot.setStatus(getStr(STATUS, SpotStatus::fromValue));
-        spot.setCountry(getStr(COUNTRY));
+        spot.setCountry(getStr(COUNTRY, CountryCode::fromValue));
         spot.setState(getStr(STATE));
         spot.setCity(getStr(CITY));
 

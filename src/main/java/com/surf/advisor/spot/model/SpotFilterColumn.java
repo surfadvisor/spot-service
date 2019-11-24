@@ -11,11 +11,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum SpotFilterColumn {
 
-    STATUS(SpotRecord.STATUS,
-        s -> ofNullable(s.getStatus()).filter(list -> list.size() == 1)
-            .map(list -> list.get(0)).map(Enum::name).orElse(null)),
-
-    COUNTRY(SpotRecord.COUNTRY, SpotFilters::getCountry),
+    STATUS(SpotRecord.STATUS, s -> ofNullable(s.getStatus()).map(Enum::name).orElse(null)),
+    //TODO: take all countries into account
+    COUNTRY(SpotRecord.COUNTRY, s -> ofNullable(s.getCountry()).map(l -> l.get(0)).map(Enum::name).orElse(null)),
     STATE(SpotRecord.STATE, SpotFilters::getState),
     CITY(SpotRecord.CITY, SpotFilters::getCity),
     NAME(SpotRecord.NAME, SpotFilters::getName)

@@ -3,7 +3,9 @@
 swagger: "2.0"
 info:
   title: 'spots'
-  version: 0.0.1
+  version: 0.0.2
+
+host: thesurfadvisor.com
 
 paths:
   /spots:
@@ -13,10 +15,8 @@ paths:
       summary: "Find spots using selectors"
       operationId: "findSpots"
       produces:
-        - "application/xml"
         - "application/json"
       consumes:
-        - "application/xml"
         - "application/json"
       parameters:
 
@@ -51,10 +51,8 @@ paths:
       summary: "put spot"
       operationId: "putSpot"
       produces:
-        - "application/xml"
         - "application/json"
       consumes:
-        - "application/xml"
         - "application/json"
 
       parameters:
@@ -77,10 +75,8 @@ paths:
       summary: "post new spot"
       operationId: "postSpot"
       produces:
-        - "application/xml"
         - "application/json"
       consumes:
-        - "application/xml"
         - "application/json"
 
       parameters:
@@ -104,10 +100,8 @@ paths:
       summary: "Find spot by identifier"
       operationId: "getSpot"
       produces:
-        - "application/xml"
         - "application/json"
       consumes:
-        - "application/xml"
         - "application/json"
       parameters:
         - in: path
@@ -127,10 +121,8 @@ paths:
       summary: "Filter spot ids"
       operationId: "filterSpotIds"
       produces:
-        - "application/xml"
         - "application/json"
       consumes:
-        - "application/xml"
         - "application/json"
       parameters:
         - in: body
@@ -152,8 +144,7 @@ definitions:
       id:
         type: string
       country:
-        type: "string"
-        example: "PL"
+        $ref: "#/definitions/CountryCode"
       state:
         type: "string"
         example: "pomorskie"
@@ -163,6 +154,10 @@ definitions:
       name:
         type: "string"
         example: "Hel Molo"
+      descriptions:
+        type: "array"
+        items:
+          $ref: "#/definitions/Description"
       photoUrls:
         type: "array"
         xml:
@@ -170,8 +165,62 @@ definitions:
           wrapped: true
         items:
           type: "string"
+      liveCamera:
+        description: "live camera urls"
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
       status:
         $ref: "#/definitions/SpotStatus"
+      sportTypes:
+        type: "array"
+        items:
+          $ref: "#/definitions/SportType"
+      waterType:
+        $ref: "#/definitions/WaterType"
+      popularity:
+        $ref: "#/definitions/Popularity"
+      facilities:
+        type: "array"
+        items:
+          $ref: "#/definitions/SpotFacility"
+      difficulty:
+        $ref: "#/definitions/Difficulty"
+      depth:
+        $ref: "#/definitions/Depth"
+      dangers:
+        type: string
+        description: free form string describing any potential risk
+      bestWindDirections:
+        type: "array"
+        items:
+          $ref: "#/definitions/BasicWindDirection"
+      worstWindDirections:
+        type: "array"
+        items:
+          $ref: "#/definitions/BasicWindDirection"
+      chopSize:
+        $ref: "#/definitions/ChopSize"
+      waveQuality:
+        type: integer
+        minimum: 1
+        maximum: 10
+        description: overall subjective wave quality rating
+      waveAvgPeriod:
+        type: integer
+        minimum: 1
+        description: in seconds
+      waveAvgSize:
+        type: integer
+        minimum: 0
+        description: in meters
+      waveMaxSize:
+        type: integer
+        minimum: 0
+        description: in meters
+      waterCurrent:
+        $ref: "#/definitions/WaterCurrent"
     required:
       - country
       - state
@@ -188,14 +237,12 @@ definitions:
           type: "string"
         collectionFormat: "multi"
       status:
-        description: "status values"
+        $ref: "#/definitions/SpotStatus"
+      country:
         type: "array"
         items:
-          $ref: "#/definitions/SpotStatus"
+          $ref: "#/definitions/CountryCode"
         collectionFormat: "multi"
-      country:
-        type: "string"
-        example: "PL"
       state:
         type: "string"
         example: "pomorskie"
@@ -205,6 +252,46 @@ definitions:
       name:
         type: "string"
         example: "Hel Molo"
+      facilities:
+        type: "array"
+        items:
+          $ref: "#/definitions/SpotFacility"
+      difficulty:
+        $ref: "#/definitions/Difficulty"
+      depth:
+        $ref: "#/definitions/Depth"
+      sportTypes:
+        type: "array"
+        items:
+          $ref: "#/definitions/SportType"
+      waterType:
+        $ref: "#/definitions/WaterType"
+
+
+  Description:
+    type: object
+    properties:
+      language:
+        $ref: "#/definitions/CountryCode"
+      content:
+        type: string
+
+  CountryCode:
+    type: string
+    description: ISO 3166-1 alpha-2 code
+    enum: [AD, AE, AF, AG, AI, AL, AM, AO, AQ, AR, AS, AT, AU, AW, AX, AZ, BA, BB, BD, BE,
+           BF, BG, BH, BI, BJ, BL, BM, BN, BO, BQ, BR, BS, BT, BV, BW, BY, BZ, CA, CC,
+           CD, CF, CG, CH, CI, CK, CL, CM, CN, CO, CR, CU, CV, CW, CX, CY, CZ, DE, DJ, DK,
+           DM, DO, DZ, EC, EE, EG, EH, ER, ES, ET, FI, FJ, FK, FM, FO, FR, GA, GB, GD, GE,
+           GF, GG, GH, GI, GL, GM, GN, GP, GQ, GR, GS, GT, GU, GW, GY, HK, HM, HN, HR, HT,
+           HU, ID, IE, IL, IM, IN, IO, IQ, IR, IS, IT, JE, JM, JO, JP, KE, KG, KH, KI, KM,
+           KN, KP, KR, KW, KY, KZ, LA, LB, LC, LI, LK, LR, LS, LT, LU, LV, LY, MA, MC, MD,
+           ME, MF, MG, MH, MK, ML, MM, MN, MO, MP, MQ, MR, MS, MT, MU, MV, MW, MX, MY, MZ,
+           NA, NC, NE, NF, NG, NI, NL, "NO", NP, NR, NU, NZ, OM, PA, PE, PF, PG, PH, PK, PL,
+           PM, PN, PR, PS, PT, PW, PY, QA, RE, RO, RS, RU, RW, SA, SB, SC, SD, SE, SG, SH,
+           SI, SJ, SK, SL, SM, SN, SO, SR, SS, ST, SV, SX, SY, SZ, TC, TD, TF, TG, TH, TJ,
+           TK, TL, TM, TN, TO, TR, TT, TV, TW, TZ, UA, UG, UM, US, UY, UZ, VA, VC, VE,
+           VG, VI, VN, VU, WF, WS, YE, YT, ZA, ZM, ZW]
 
   SpotStatus:
     type: "string"
@@ -212,7 +299,42 @@ definitions:
       - "DRAFT"
       - "DECLINED"
       - "AVAILABLE"
-    default: "AVAILABLE"
+
+  SportType:
+    type: string
+    enum: [WINDSURFING, KITESURFING, SURFING]
+
+  WaterType:
+    type: string
+    enum: [FLAT, WAVE]
+
+  Popularity:
+    type: string
+    enum: [S, M, H]
+
+  SpotFacility:
+    type: string
+    enum: [SCHOOLS]
+
+  Difficulty:
+    type: string
+    enum: [EASY, MEDIUM, HARD, PROS_ONLY]
+
+  Depth:
+    type: string
+    enum: [SHALLOW, DEEP]
+
+  BasicWindDirection:
+    type: string
+    enum: ["N", NE, E, SE, S, SW, W, NW]
+
+  ChopSize:
+    type: string
+    enum: ["N", S, M, H]
+
+  WaterCurrent:
+    type: string
+    enum: ["N", S, M, H]
 
 # RESPONSES
 

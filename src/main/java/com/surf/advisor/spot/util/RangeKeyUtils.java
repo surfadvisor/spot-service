@@ -21,7 +21,7 @@ public class RangeKeyUtils {
 
     private static final List<Function<Spot, String>> SPOT_RANGE_KEY_GETTERS = List.of(
         s -> ofNullable(s.getStatus()).map(Enum::name).orElse(null),
-        Spot::getCountry,
+        s -> ofNullable(s.getCountry()).map(Enum::name).orElse(null),
         Spot::getState,
         Spot::getCity,
         Spot::getName
