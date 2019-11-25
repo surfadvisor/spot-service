@@ -1,85 +1,101 @@
 package com.surf.advisor.spot.model;
 
-import static com.surf.advisor.spot.util.RangeKeyUtils.buildRangeKey;
-import static java.util.Optional.of;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
+import com.surf.advisor.spot.web.api.model.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.surf.advisor.spot.web.api.model.Spot;
-import com.surf.advisor.spot.web.api.model.SpotStatus;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import lombok.Getter;
+import java.util.Set;
 
+import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel.DynamoDBAttributeType.S;
+import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel.DynamoDBAttributeType.SS;
+
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@DynamoDBTable(tableName = "SPOT")
 public class SpotRecord {
 
     public static final String ID = "id";
-    private static final String RANGE_KEY = "rangeKey";
-
+    static final String STATUS = "spot_status";
     static final String COUNTRY = "country";
+    static final String SPORT_TYPES = "sportTypes";
+    static final String WATER_TYPE = "waterType";
+
     static final String STATE = "spot_state";
     static final String CITY = "city";
-
     static final String NAME = "name";
-    private static final String PHOTO_URLS = "photoUrls";
-    static final String STATUS = "spot_status";
 
-    @Getter
-    private Map<String, AttributeValue> values = new HashMap<>();
+    @DynamoDBHashKey
+    private String id;
+    @DynamoDBTyped(S)
+    @DynamoDBAttribute(attributeName = "spot_status")
+    private SpotStatus status;
+    @DynamoDBTyped(S)
+    @DynamoDBAttribute
+    private CountryCode country;
+    @DynamoDBAttribute(attributeName = "spot_state")
+    private String state;
+    @DynamoDBAttribute
+    private String city;
+    @DynamoDBAttribute
+    private String name;
 
-    public SpotRecord(Spot spot) {
+    @DynamoDBTyped(SS)
+    @DynamoDBAttribute
+    private Set<SportType> sportTypes;
+    @DynamoDBTyped(S)
+    @DynamoDBAttribute
+    private WaterType waterType;
+    @DynamoDBTyped(SS)
+    @DynamoDBAttribute
+    private Set<SpotFacility> facilities;
+    @DynamoDBTyped(S)
+    @DynamoDBAttribute
+    private Difficulty difficulty;
+    @DynamoDBTyped(S)
+    @DynamoDBAttribute
+    private Depth depth;
+    @DynamoDBAttribute
+    private Integer waveAvgPeriod;
+    @DynamoDBAttribute
+    private Integer waveAvgSize;
 
-        setStr(ID, spot.getId());
-        setStr(NAME, spot.getName());
-        setStr(STATUS, spot.getStatus().name());
-        setStr(COUNTRY, spot.getCountry());
-        setStr(STATE, spot.getState());
-        setStr(CITY, spot.getCity());
+    @DynamoDBTyped(SS)
+    @DynamoDBAttribute
+    private Set<BasicWindDirection> bestWindDirections;
+    @DynamoDBTyped(SS)
+    @DynamoDBAttribute
+    private Set<BasicWindDirection> worstWindDirections;
+    @DynamoDBAttribute
+    private String dangers;
+    @DynamoDBTyped(S)
+    @DynamoDBAttribute
+    private Popularity popularity;
+    @DynamoDBTyped(S)
+    @DynamoDBAttribute
+    private ChopSize chopSize;
+    @DynamoDBAttribute
+    private Integer waveQuality;
+    @DynamoDBAttribute
+    private Integer waveMaxSize;
+    @DynamoDBTyped(S)
+    @DynamoDBAttribute
+    private WaterCurrent waterCurrent;
 
-        ofNullable(spot.getPhotoUrls()).ifPresent(urls -> {
-            List<AttributeValue> urlList = urls.stream().map(AttributeValue::new).collect(toList());
-
-            values.put(PHOTO_URLS, new AttributeValue().withL(urlList));
-        });
-
-        values.put(RANGE_KEY, buildRangeKey(spot));
-    }
-
-    public SpotRecord(Map<String, AttributeValue> values) {
-        this.values.putAll(values);
-    }
-
-    public Spot toResponse() {
-        var spot = new Spot();
-
-        spot.setId(getStr(ID));
-        spot.setName(getStr(NAME));
-        spot.setStatus(getStr(STATUS, SpotStatus::fromValue));
-        spot.setCountry(getStr(COUNTRY));
-        spot.setState(getStr(STATE));
-        spot.setCity(getStr(CITY));
-
-        ofNullable(values.get(PHOTO_URLS))
-            .map(urls -> urls.getL().stream().map(AttributeValue::getS).collect(toList()))
-            .ifPresent(spot::setPhotoUrls);
-
-        return spot;
-    }
-
-    private void setStr(String field, String value) {
-        values.put(field, new AttributeValue(value));
-    }
-
-    private String getStr(String field) {
-        return getStr(field, identity());
-    }
-
-    private <T> T getStr(String field, Function<String, T> mapper) {
-        return of(field).map(values::get).map(AttributeValue::getS).map(mapper).orElse(null);
-    }
+    @DynamoDBAttribute
+    private Map<String, String> descriptions;
+    @DynamoDBAttribute
+    private List<String> photoUrls;
+    @DynamoDBAttribute
+    private List<String> liveCamera;
 
 }

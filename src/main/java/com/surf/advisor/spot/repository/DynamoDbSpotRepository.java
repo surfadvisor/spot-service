@@ -1,31 +1,34 @@
 package com.surf.advisor.spot.repository;
 
-import static com.surf.advisor.spot.model.SpotRecord.ID;
-import static com.surf.advisor.spot.util.RecordUtils.lastEvaluatedKey;
-import static java.util.stream.Collectors.toList;
-import static org.springframework.util.CollectionUtils.isEmpty;
-
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.surf.advisor.spot.mapper.SpotMapper;
 import com.surf.advisor.spot.model.SpotQueryProps;
 import com.surf.advisor.spot.model.SpotRecord;
 import com.surf.advisor.spot.web.api.model.PagedSpotResponse;
 import com.surf.advisor.spot.web.api.model.Spot;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static com.surf.advisor.spot.model.SpotRecord.ID;
+import static com.surf.advisor.spot.util.RecordUtils.lastEvaluatedKey;
+import static java.util.stream.Collectors.toList;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor
 public class DynamoDbSpotRepository implements ISpotRepository {
 
+    private final DynamoDBMapper dbMapper;
     private final AmazonDynamoDB ddb;
     private final String tableName;
 
@@ -35,14 +38,13 @@ public class DynamoDbSpotRepository implements ISpotRepository {
             .withKeyConditionExpression("id = :v_id")
             .withExpressionAttributeValues(Map.of(":v_id", new AttributeValue(id)));
 
-        return ddb.query(request).getItems().stream().findAny().map(SpotRecord::new);
+        return ddb.query(request).getItems().stream().findAny()
+            .map(item -> dbMapper.marshallIntoObject(SpotRecord.class, item));
     }
 
     @Override
     public void put(SpotRecord spotRecord) {
-        var ddbRequest = new PutItemRequest(tableName, spotRecord.getValues());
-
-        ddb.putItem(ddbRequest);
+        dbMapper.save(spotRecord);
     }
 
     @Override
@@ -81,7 +83,8 @@ public class DynamoDbSpotRepository implements ISpotRepository {
             log.debug("Retrieving spots by DynamoDB Query: {}", request);
 
             return ddb.query(request).getItems().stream()
-                .map(SpotRecord::new).map(SpotRecord::toResponse);
+                .map(item -> dbMapper.marshallIntoObject(SpotRecord.class, item))
+                .map(SpotMapper.INSTANCE::map);
         })
             .limit(props.getLimit())
             .collect(toList());
@@ -106,7 +109,9 @@ public class DynamoDbSpotRepository implements ISpotRepository {
         var scan = ddb.scan(request);
 
         var spots = scan.getItems().stream()
-            .map(SpotRecord::new).map(SpotRecord::toResponse).collect(toList());
+            .map(item -> dbMapper.marshallIntoObject(SpotRecord.class, item))
+            .map(SpotMapper.INSTANCE::map)
+            .collect(toList());
 
         var page = new PagedSpotResponse();
 

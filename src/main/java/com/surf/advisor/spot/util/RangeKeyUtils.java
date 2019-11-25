@@ -1,18 +1,19 @@
 package com.surf.advisor.spot.util;
 
-import static java.util.Arrays.asList;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
-
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.surf.advisor.spot.model.SpotFilterColumn;
 import com.surf.advisor.spot.web.api.model.Spot;
+import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
-import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
+
+import static java.util.Arrays.asList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 
 @UtilityClass
 public class RangeKeyUtils {
@@ -21,7 +22,7 @@ public class RangeKeyUtils {
 
     private static final List<Function<Spot, String>> SPOT_RANGE_KEY_GETTERS = List.of(
         s -> ofNullable(s.getStatus()).map(Enum::name).orElse(null),
-        Spot::getCountry,
+        s -> ofNullable(s.getCountry()).map(Enum::name).orElse(null),
         Spot::getState,
         Spot::getCity,
         Spot::getName

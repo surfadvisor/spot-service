@@ -1,23 +1,19 @@
 package com.surf.advisor.spot.service;
 
-import static com.surf.advisor.spot.web.api.model.SpotStatus.DRAFT;
-import static java.util.Optional.ofNullable;
-import static java.util.UUID.randomUUID;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-
+import com.surf.advisor.spot.mapper.SpotMapper;
 import com.surf.advisor.spot.model.SpotQueryProps;
-import com.surf.advisor.spot.model.SpotRecord;
 import com.surf.advisor.spot.repository.ISpotRepository;
 import com.surf.advisor.spot.web.api.SpotsApiDelegate;
-import com.surf.advisor.spot.web.api.model.PagedSpotResponse;
-import com.surf.advisor.spot.web.api.model.Spot;
-import com.surf.advisor.spot.web.api.model.SpotFilters;
-import com.surf.advisor.spot.web.api.model.SpotIdListResponse;
-import com.surf.advisor.spot.web.api.model.SpotIdResponse;
+import com.surf.advisor.spot.web.api.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+
+import static com.surf.advisor.spot.web.api.model.SpotStatus.DRAFT;
+import static java.util.Optional.ofNullable;
+import static java.util.UUID.randomUUID;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +31,7 @@ public class SpotApiDelegateImpl implements SpotsApiDelegate {
 
     @Override
     public ResponseEntity<SpotIdResponse> putSpot(Spot spot) {
-        spotRepository.put(new SpotRecord(spot));
+        spotRepository.put(SpotMapper.INSTANCE.map(spot));
 
         return ResponseEntity.ok(new SpotIdResponse().id(spot.getId()));
     }
@@ -43,7 +39,7 @@ public class SpotApiDelegateImpl implements SpotsApiDelegate {
     @Override
     public ResponseEntity<Spot> getSpot(String id) {
         return spotRepository.get(id)
-            .map(SpotRecord::toResponse)
+            .map(SpotMapper.INSTANCE::map)
             .map(ResponseEntity::ok)
             .orElseThrow(() -> new HttpClientErrorException(NOT_FOUND));
     }
