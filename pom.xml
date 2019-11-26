@@ -16,7 +16,10 @@
     </scm>
 
     <repositories>
-        <!-- jhipster-needle-maven-repository -->
+        <repository>
+            <id>repo.surf.advisor</id>
+            <url>s3://repo.surf.advisor/release</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -28,7 +31,7 @@
     <properties>
         <!-- Build properties -->
         <maven.version>3.3.9</maven.version>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
@@ -82,6 +85,11 @@
         <lombok.version>1.18.6</lombok.version>
         <apache.commons.lang.version>3.9</apache.commons.lang.version>
         <mvn.release.plugin.version>2.5.3</mvn.release.plugin.version>
+        <!-- artifactory S3 -->
+        <s3.storage.wagon.version>1.8</s3.storage.wagon.version>
+
+        <!-- SurfAdvisor dependencies -->
+        <surf.geolocation.version>0.0.3</surf.geolocation.version>
     </properties>
 
     <dependencyManagement>
@@ -118,6 +126,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>com.surf.advisor.geolocation</groupId>
+            <artifactId>geolocation-api</artifactId>
+            <version>${surf.geolocation.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-dynamodb</artifactId>
@@ -354,6 +367,13 @@
 
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>
+        <extensions>
+            <extension>
+                <groupId>com.gkatzioura.maven.cloud</groupId>
+                <artifactId>s3-storage-wagon</artifactId>
+                <version>${s3.storage.wagon.version}</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

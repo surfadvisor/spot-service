@@ -56,6 +56,8 @@ paths:
         - "application/json"
 
       parameters:
+        - $ref: '#/parameters/latitude'
+        - $ref: '#/parameters/longitude'
         - in: body
           name: spot
           required: true
@@ -80,6 +82,8 @@ paths:
         - "application/json"
 
       parameters:
+        - $ref: '#/parameters/latitude'
+        - $ref: '#/parameters/longitude'
         - in: body
           name: spot
           required: true
@@ -136,6 +140,20 @@ paths:
           description: "ok"
           schema:
             $ref: "#/definitions/SpotIdListResponse"
+
+parameters:
+  latitude:
+    in: query
+    name: latitude
+    required: true
+    type: number
+    format: double
+  longitude:
+    in: query
+    name: longitude
+    required: true
+    type: number
+    format: double
 
 definitions:
   Spot:
@@ -257,7 +275,9 @@ definitions:
         items:
           $ref: "#/definitions/SpotFacility"
       difficulty:
-        $ref: "#/definitions/Difficulty"
+        type: "array"
+        items:
+          $ref: "#/definitions/Difficulty"
       depth:
         $ref: "#/definitions/Depth"
       sportTypes:

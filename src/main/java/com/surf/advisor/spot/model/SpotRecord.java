@@ -1,9 +1,6 @@
 package com.surf.advisor.spot.model;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.surf.advisor.spot.web.api.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,6 +33,9 @@ public class SpotRecord {
 
     @DynamoDBHashKey
     private String id;
+    @DynamoDBRangeKey
+    public String rangeKey;
+
     @DynamoDBTyped(S)
     @DynamoDBAttribute(attributeName = "spot_status")
     private SpotStatus status;

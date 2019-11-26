@@ -26,11 +26,13 @@ amazon:
 feign:
   hystrix:
     enabled: true
-  # client:
-  #     config:
-  #         default:
-  #             connectTimeout: 5000
-  #             readTimeout: 5000
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+  geolocation:
+    url: ${GEO_HOST:localhost:8000}
 
 # See https://github.com/Netflix/Hystrix/wiki/Configuration
 hystrix:

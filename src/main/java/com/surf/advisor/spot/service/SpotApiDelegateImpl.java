@@ -1,5 +1,7 @@
 package com.surf.advisor.spot.service;
 
+import com.surf.advisor.geolocation.api.model.Geolocation;
+import com.surf.advisor.spot.client.geo.api.GeolocationApiClient;
 import com.surf.advisor.spot.mapper.SpotMapper;
 import com.surf.advisor.spot.model.SpotQueryProps;
 import com.surf.advisor.spot.repository.ISpotRepository;
@@ -20,18 +22,21 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class SpotApiDelegateImpl implements SpotsApiDelegate {
 
     private final ISpotRepository spotRepository;
+    private final GeolocationApiClient geoClient;
 
     @Override
-    public ResponseEntity<SpotIdResponse> postSpot(Spot spot) {
+    public ResponseEntity<SpotIdResponse> postSpot(Double latitude, Double longitude, Spot spot) {
         spot.setId(randomUUID().toString());
         spot.setStatus(DRAFT);
 
-        return putSpot(spot);
+        return putSpot(latitude, longitude, spot);
     }
 
     @Override
-    public ResponseEntity<SpotIdResponse> putSpot(Spot spot) {
+    public ResponseEntity<SpotIdResponse> putSpot(Double latitude, Double longitude, Spot spot) {
         spotRepository.put(SpotMapper.INSTANCE.map(spot));
+
+        geoClient.putGeolocation(new Geolocation(spot.getId(), "SPOT", latitude, longitude));
 
         return ResponseEntity.ok(new SpotIdResponse().id(spot.getId()));
     }
