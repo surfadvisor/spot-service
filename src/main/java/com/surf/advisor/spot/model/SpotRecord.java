@@ -24,8 +24,15 @@ public class SpotRecord {
     public static final String ID = "id";
     static final String STATUS = "spot_status";
     static final String COUNTRY = "country";
-    static final String SPORT_TYPES = "sportTypes";
+    static final String DIFFICULTY = "difficulty";
     static final String WATER_TYPE = "waterType";
+    static final String DEPTH = "depth";
+
+    static final String SPORT_TYPES = "sportTypes";
+    static final String FACILITIES = "facilities";
+
+    static final String WAVE_AVG_PERIOD = "waveAvgPeriod";
+    static final String WAVE_AVG_SIZE = "waveAvgSize";
 
     static final String STATE = "spot_state";
     static final String CITY = "city";

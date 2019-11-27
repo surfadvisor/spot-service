@@ -2,6 +2,7 @@ package com.surf.advisor.spot.util;
 
 import com.surf.advisor.spot.model.SpotFilterColumn;
 import com.surf.advisor.spot.web.api.model.Spot;
+import com.surf.advisor.spot.web.api.model.SpotFilters;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,11 +10,13 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 @UtilityClass
 public class RangeKeyUtils {
@@ -35,7 +38,16 @@ public class RangeKeyUtils {
         return s -> ofNullable(s).map(enumGetter).map(Enum::name).orElse(null);
     }
 
-    private static final SpotFilterColumn[] FILTERS_RANGE_KEY_GETTERS = SpotFilterColumn.values();
+    private static final List<SpotFilterColumn> FILTERS_RANGE_KEY_COLUMNS;
+    public static final List<SpotFilterColumn> FILTERS_NON_RANGE_KEY_COLUMNS;
+
+    static {
+        var filterRangeKeyColumns = Stream.of(SpotFilterColumn.values())
+            .collect(partitioningBy(column -> column.getRangeKeyValueRetriever() != null));
+
+        FILTERS_RANGE_KEY_COLUMNS = unmodifiableList(filterRangeKeyColumns.get(true));
+        FILTERS_NON_RANGE_KEY_COLUMNS = unmodifiableList(filterRangeKeyColumns.get(false));
+    }
 
     public static String buildRangeKey(Spot spot) {
         return SPOT_RANGE_KEY_GETTERS.stream()
@@ -45,14 +57,36 @@ public class RangeKeyUtils {
     }
 
     public static Deque<SpotFilterColumn> rangeKeyColumns() {
-        return new LinkedList<>(asList(FILTERS_RANGE_KEY_GETTERS));
+        return new LinkedList<>(FILTERS_RANGE_KEY_COLUMNS);
     }
 
-    public static String normalize(String input) {
+    private static String normalize(String input) {
         return ofNullable(input)
             .map(StringUtils::stripAccents)
             .map(String::toLowerCase)
             .orElse("");
+    }
+
+    public static List<String> generateConditionKeyExpressions(SpotFilters filters, Deque<SpotFilterColumn> columns) {
+        if (!columns.isEmpty()) {
+
+            var currentColumnValues = of(columns.pop()).map(col -> col.getRangeKeyValueRetriever().apply(filters));
+
+            List<String> furtherValues = generateConditionKeyExpressions(filters, columns);
+
+            if (currentColumnValues.isPresent()) {
+                return currentColumnValues.get().stream()
+                    .map(RangeKeyUtils::normalize)
+                    .filter(StringUtils::isNotBlank)
+                    .flatMap(currVal -> {
+                    if (!furtherValues.isEmpty()) {
+                        return furtherValues.stream().map(furVal -> currVal + RANGE_KEY_SEPARATOR + furVal);
+                    }
+                    return Stream.of(currVal);
+                }).collect(toList());
+            }
+        }
+        return emptyList();
     }
 
 }

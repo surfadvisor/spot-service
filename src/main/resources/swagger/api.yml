@@ -255,7 +255,10 @@ definitions:
           type: "string"
         collectionFormat: "multi"
       status:
-        $ref: "#/definitions/SpotStatus"
+        description: "status values"
+        type: "array"
+        items:
+          $ref: "#/definitions/SpotStatus"
       country:
         type: "array"
         items:
@@ -279,14 +282,21 @@ definitions:
         items:
           $ref: "#/definitions/Difficulty"
       depth:
-        $ref: "#/definitions/Depth"
+        type: "array"
+        items:
+          $ref: "#/definitions/Depth"
       sportTypes:
         type: "array"
         items:
           $ref: "#/definitions/SportType"
       waterType:
-        $ref: "#/definitions/WaterType"
-
+        type: "array"
+        items:
+          $ref: "#/definitions/WaterType"
+      waveAvgPeriod:
+        $ref: "#/definitions/IntegerRange"
+      waveAvgSize:
+        $ref: "#/definitions/IntegerRange"
 
   Description:
     type: object
@@ -355,6 +365,16 @@ definitions:
   WaterCurrent:
     type: string
     enum: ["N", S, M, H]
+
+  IntegerRange:
+    type: object
+    properties:
+      from:
+        type: integer
+        description: "inclusive start number"
+      to:
+        type: integer
+        description: "inclusive end number"
 
   # RESPONSES
 
