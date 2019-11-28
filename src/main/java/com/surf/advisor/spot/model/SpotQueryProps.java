@@ -5,17 +5,19 @@ import com.surf.advisor.spot.web.api.model.SpotFilters;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 import static com.surf.advisor.spot.util.RangeKeyUtils.*;
 import static com.surf.advisor.spot.util.RecordUtils.exclusiveStartKey;
-import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+@Slf4j
 @Getter
 @ToString
 public class SpotQueryProps {
@@ -56,42 +58,28 @@ public class SpotQueryProps {
     }
 
     private void setKeyConditionExpresion(List<String> rangeKeyPhrases) {
-        if(isEmpty(rangeKeyPhrases)) {
-            rangeKeyPhrases = List.of("");
+        if (idsSpecified()) {
+            if (isEmpty(rangeKeyPhrases)) {
+                rangeKeyPhrases = List.of("");
+            }
+            rangeKeyPhrases.forEach(rangeKeyPhrase ->
+                new HashSet<>(filters.getIds()).stream()
+                    .map(id -> new KeyCondition(id, rangeKeyPhrase, valueMap))
+                    .forEach(keyConditions::add)
+            );
         }
-        rangeKeyPhrases.forEach(rangeKeyPhrase ->
-            new HashSet<>(filters.getIds()).stream()
-                .map(id -> new KeyCondition(id, rangeKeyPhrase, valueMap))
-                .forEach(keyConditions::add)
-        );
     }
 
     private void setFilterExpression(Deque<SpotFilterColumn> leftRangeKeyColumns) {
 
         String filterExpression = Stream.concat(leftRangeKeyColumns.stream(), FILTERS_NON_RANGE_KEY_COLUMNS.stream())
-            .map(col -> new FilterParam(col, filters))
-            .filter(FilterParam::isApplicable)
-            .peek(param -> valueMap.put(param.getVarName(), new AttributeValue(param.getValue())))
-            .map(param -> format("%s = %s", param.getColumnName(), param.getVarName()))
+            .peek(col -> valueMap.putAll(col.getFilterExpressionValuesProvider().apply(filters)))
+            .map(col -> col.getFilterExpressionGenerator().apply(col, filters))
+            .filter(StringUtils::isNotBlank)
             .collect(joining(" AND "));
 
         filterExp = isNotBlank(filterExpression) ? filterExpression : null;
-    }
 
-    @Getter
-    private static class FilterParam {
-
-        private final boolean applicable;
-        private final String columnName;
-        private final String varName;
-        private final String value;
-
-        FilterParam(SpotFilterColumn column, SpotFilters filters) {
-            value = "";//column.getGetter().apply(filters);
-
-            applicable = isNotBlank(value);
-            columnName = column.getName();
-            varName = ":v_" + columnName;
-        }
+        log.debug("Computed filter dynamoDB expression: [{}]", filterExp);
     }
 }
