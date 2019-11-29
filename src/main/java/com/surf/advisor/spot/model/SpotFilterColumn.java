@@ -61,7 +61,7 @@ public enum SpotFilterColumn {
             return Map.of(" >= ", range.getFrom(), " <= ", range.getTo()).entrySet().stream()
                 .filter(e -> nonNull(e.getValue()))
                 .map(e -> format("(%s%s%s)", name, e.getKey(), computeVarName(e.getValue())))
-                .collect(joining());
+                .collect(joining(" AND "));
         }
         return "";
     }
@@ -106,7 +106,7 @@ public enum SpotFilterColumn {
     private static Map<String, AttributeValue> rangeValues(IntegerRange range) {
         if (range != null) {
             return Stream.of(range.getFrom(), range.getTo()).filter(Objects::nonNull).map(Object::toString)
-                .collect(toMap(SpotFilterColumn::computeVarName, new AttributeValue()::withN));
+                .collect(toMap(SpotFilterColumn::computeVarName, n -> new AttributeValue().withN(n)));
         }
         return Map.of();
     }
