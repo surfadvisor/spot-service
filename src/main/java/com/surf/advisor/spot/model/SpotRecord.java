@@ -26,7 +26,7 @@ public class SpotRecord {
     static final String COUNTRY = "country";
     static final String DIFFICULTY = "difficulty";
     static final String WATER_TYPE = "waterType";
-    static final String DEPTH = "depth";
+    static final String DEPTH = "spot_depth";
 
     static final String SPORT_TYPES = "sportTypes";
     static final String FACILITIES = "facilities";
@@ -44,12 +44,12 @@ public class SpotRecord {
     public String rangeKey;
 
     @DynamoDBTyped(S)
-    @DynamoDBAttribute(attributeName = "spot_status")
+    @DynamoDBAttribute(attributeName = STATUS)
     private SpotStatus status;
     @DynamoDBTyped(S)
     @DynamoDBAttribute
     private CountryCode country;
-    @DynamoDBAttribute(attributeName = "spot_state")
+    @DynamoDBAttribute(attributeName = STATE)
     private String state;
     @DynamoDBAttribute
     private String city;
@@ -69,7 +69,7 @@ public class SpotRecord {
     @DynamoDBAttribute
     private Difficulty difficulty;
     @DynamoDBTyped(S)
-    @DynamoDBAttribute
+    @DynamoDBAttribute(attributeName = DEPTH)
     private Depth depth;
     @DynamoDBAttribute
     private Integer waveAvgPeriod;

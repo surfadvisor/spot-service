@@ -70,11 +70,12 @@ public class RangeKeyUtils {
     public static List<String> generateConditionKeyExpressions(SpotFilters filters, Deque<SpotFilterColumn> columns) {
         if (!columns.isEmpty()) {
 
-            var currentColumnValues = of(columns.pop()).map(col -> col.getRangeKeyValueRetriever().apply(filters));
-
-            List<String> furtherValues = generateConditionKeyExpressions(filters, columns);
+            var currentColumnValues = of(columns.pop()).map(col -> col.getRangeKeyValueRetriever().apply(filters))
+                .filter(values -> !values.isEmpty());
 
             if (currentColumnValues.isPresent()) {
+                List<String> furtherValues = generateConditionKeyExpressions(filters, columns);
+
                 return currentColumnValues.get().stream()
                     .map(RangeKeyUtils::normalize)
                     .filter(StringUtils::isNotBlank)
