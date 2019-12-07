@@ -20,6 +20,9 @@ spec:
                   envFrom:
                       - secretRef:
                             name: spot-dynamodb-secrets
+                  env:
+                      - name: GEO_HOST
+                        value: geolocation-service:8080
 
 ---
 apiVersion: v1
